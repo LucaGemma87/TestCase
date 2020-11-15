@@ -31,28 +31,32 @@ def cuda_vector_gnot(vector,result):
     tmp = 0.
     for i in range(range_data):
         # Preload data into shared memory
-        #print(i)
+        print(i)
         temp_1 = vector[x, ty + i * TPB]
         sA[tx] = temp_1
-        #print(temp_1)
+        print(temp_1)
         temp_2 = vector[tx + i * TPB, y]
         sB[ty] = temp_2
-        #print(temp_2)        
+        print(temp_2)
+
+        tmp += math.floor(abs(temp_1 - temp_2 - tmp)/3)
+
+
         # Wait until all threads finish preloading
         cuda.syncthreads()
 
         #print(sA)
         #print(sB)
         # Computes partial product on the shared memory
-        for j in range(TPB):
-            print(j)
-            tmp = 0
-            tmp += abs(sA[tx, j] - tmp)
-            #print(tmp)
+        #for j in range(TPB):
+        #    print(j)
+        #    tmp = 0
+        #    tmp += abs(sA[tx, j] - tmp)
+        #    print(tmp)
         # Wait until all threads finish computing
-        cuda.syncthreads()
+        #cuda.syncthreads()
 
-    result[x, y] = tmp
+    result[x] = tmp
     
     #print(sA)
     #print(sB)
@@ -76,7 +80,7 @@ def main():
     null_matrix = numpy.full((num_of_rows, num_of_cols), numpy.zeros)
     
     # The data array
-    matrix = [1,3,4,6,9]
+    matrix = [0,3,4,6,9]
     A = numpy.full((TPB,TPB), 1, numpy.float) # [32 x 48] matrix containing all 3's
     print(A)
     print(A*matrix)
